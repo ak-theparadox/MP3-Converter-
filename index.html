@@ -1,32 +1,45 @@
-<!DOCTYPE html>
-<html>
-<head><title>YT to MP3</title></head>
-<body>
-  <h1>YouTube to MP3</h1>
-  <input type="text" id="url" placeholder="Enter YouTube URL">
-  <button onclick="convert()">Convert</button>
-
-  <script>
+<<!DOCTYPE html><html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YouTube to MP3 Converter</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center">
+  <div class="bg-gray-800 p-8 rounded-xl shadow-lg w-full max-w-md">
+    <h1 class="text-2xl font-bold mb-6 text-center">YouTube to MP3</h1>
+    <input id="url" type="text" placeholder="Paste YouTube URL here" class="w-full p-3 mb-4 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+    <button onclick="convert()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded font-semibold">Convert to MP3</button>
+    <p id="status" class="mt-4 text-sm text-gray-400 text-center"></p>
+  </div>  <script>
     async function convert() {
       const url = document.getElementById('url').value;
-      const response = await fetch('https://your-backend-url/convert', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ url })
-      });
-      if (response.ok) {
+      const status = document.getElementById('status');
+      status.textContent = 'Converting...';
+
+      try {
+        const response = await fetch('https://your-backend-url/convert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url })
+        });
+
+        if (!response.ok) throw new Error('Conversion failed');
+
         const blob = await response.blob();
-        const downloadUrl = window.URL.createObjectURL(blob);
+        const downloadUrl = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = downloadUrl;
         a.download = "converted.mp3";
         document.body.appendChild(a);
         a.click();
         a.remove();
-      } else {
-        alert('Error during conversion');
+
+        status.textContent = 'Download ready!';
+      } catch (err) {
+        console.error(err);
+        status.textContent = 'Error: Could not convert the video.';
       }
     }
-  </script>
-</body>
+  </script></body>
 </html>
